@@ -13,7 +13,7 @@ steps:
       storage: 500Mi
       access_mode: ReadWriteOnce
     next: 
-      - interstep
+      - interstepa
   - name: interstep
     type: INTERMEDIARY
     trigger: AUTO
