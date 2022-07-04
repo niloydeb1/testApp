@@ -11,9 +11,9 @@ steps:
       args_from_configmaps: tekton/cm-test
       args: key3:value1,key4:value2
       storage: 500Mi
-      access_mode: ReadWriteOnce
+      access_mode: ReaWriteOnce
     next: 
-      - interstepa
+      - interstep
   - name: interstep
     type: INTERMEDIARY
     trigger: AUTO
