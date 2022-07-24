@@ -5,19 +5,18 @@ steps:
     trigger: AUTO
     params:
       repository_type: git
-      revision: master
       service_account: test-sa
       images: coderator98/test-dev,coderator98/test-pro
       args_from_configmaps: tekton/cm-test
       args: key3:value1,key4:value2
-      storage: 500Mi
-      access_mode: ReaWriteOnce
+      allowed_branches: dev,master
     next: 
       - interstep
   - name: interstep
     type: INTERMEDIARY
     trigger: AUTO
     params:
+      env: test
       revision: latest
       service_account: test-sa
       images: ubuntu
@@ -26,6 +25,7 @@ steps:
       envs: key3:value1,key4:value2
       command: echo
       command_args: Hello World
+      script: echo "Hello zeromsi"
     next:
       - deployDev
   - name: deployDev
@@ -37,14 +37,28 @@ steps:
       namespace: default
       type: deployment
       revision: master
+      trunk_based: enabled
+      rollout_restart: true
       env: dev
       images: coderator98/test-dev
     next: 
-      - jenkinsJob
-  - name: jenkinsJob
+      - jenkins
+  - name: jenkins
     type: JENKINS_JOB
     trigger: AUTO
     params:
+      env: edge
+      url: http://jenkins.default.svc:8080
+      job: new
+      secret: jenkins-credentials
+      params: id:123,verbosity:high   
+    next:
+     - jenkins1
+  - name: jenkins1
+    type: JENKINS_JOB
+    trigger: AUTO
+    params:
+      env: edge2
       url: http://jenkins.default.svc:8080
       job: new
       secret: jenkins-credentials
